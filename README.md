@@ -17,8 +17,8 @@ and Simplified/Traditional Chinese translations. The default matrix is:
 
 | OpenWrt | Package format | Targets |
 | --- | --- | --- |
-| 24.10.8 | IPK | x86/64, mediatek/filogic (ARM64) |
-| 25.12.6 | APK | x86/64, mediatek/filogic (ARM64) |
+| 24.10.8 | IPK | x86/64 |
+| 25.12.6 | APK | x86/64 |
 
 - Pushes to `main` and pull requests affecting package/build files run builds.
 - To build manually, open **Actions → Build OpenWrt packages → Run workflow**.
@@ -27,9 +27,9 @@ and Simplified/Traditional Chinese translations. The default matrix is:
   retained for 14 days. Failed builds retain SDK logs for 7 days.
 - Pushing a `v*` tag builds all targets and creates a GitHub Release after all
   builds succeed. Releases provide directly installable `.ipk` and `.apk`
-  attachments, checksums and per-target build manifests. LuCI and translations
-  use one architecture-independent copy per format from the x86 SDK; Tailscale
-  binaries are published separately for each architecture. APK filenames include
+  attachments: exactly three IPKs and three APKs for x86_64 (Tailscale, LuCI and
+  Simplified Chinese). Build manifests, checksums, verification reports and the
+  Traditional Chinese translation remain in Actions artifacts. APK filenames include
   the release and target because their default names omit the architecture.
   Re-running a tag build replaces its assets. Tailscale, LuCI and translation
   package versions follow Tailscale's version. A tag suffix such as `-r2`

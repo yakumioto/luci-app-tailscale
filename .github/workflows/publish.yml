@@ -64,10 +64,10 @@ jobs:
           fi
           gh release upload "$TAG" dist/* --clobber
           gh release edit "$TAG" --notes-file .github/RELEASE_NOTES.md
-          # Remove the superseded wrappers only after all direct uploads succeed.
+          # Keep only the approved six packages after all uploads succeed.
           gh release view "$TAG" --json assets --jq '.assets[].name' > asset-names.txt
           while IFS= read -r asset; do
-            if [[ "$asset" == openwrt-*.tar.gz ]]; then
+            if [[ ! -f "dist/$asset" ]]; then
               gh release delete-asset "$TAG" "$asset" --yes
             fi
           done < asset-names.txt

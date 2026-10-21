@@ -37,7 +37,7 @@ jobs:
       fail-fast: false
       matrix:
         release: ['24.10.8', '25.12.6']
-        target: ['x86/64', 'mediatek/filogic']
+        target: ['x86/64']
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
@@ -109,3 +109,10 @@ jobs:
             gh release create "$TAG" --verify-tag --title "$TAG" --notes-file .github/RELEASE_NOTES.md
           fi
           gh release upload "$TAG" dist/* --clobber
+          gh release edit "$TAG" --notes-file .github/RELEASE_NOTES.md
+          gh release view "$TAG" --json assets --jq '.assets[].name' > asset-names.txt
+          while IFS= read -r asset; do
+            if [[ ! -f "dist/$asset" ]]; then
+              gh release delete-asset "$TAG" "$asset" --yes
+            fi
+          done < asset-names.txt
