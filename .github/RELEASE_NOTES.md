@@ -1,6 +1,6 @@
 Six installable packages for x86_64 OpenWrt: Tailscale, LuCI and Simplified Chinese.
-Tailscale, the LuCI application and translations are versioned **1.104.2**.
-The `-r2` tag suffix identifies the corrected OpenWrt packaging revision.
+Tailscale, the LuCI application and translations are versioned **{{VERSION}}**.
+The OpenWrt packaging revision is **r{{REVISION}}**.
 LuCI and translation packages use architecture `all`.
 
 Download the `.ipk` or `.apk` files directly; no tarball extraction is needed.
@@ -8,7 +8,7 @@ Download the `.ipk` or `.apk` files directly; no tarball extraction is needed.
 | Router system | Tailscale package | LuCI and translations |
 | --- | --- | --- |
 | OpenWrt 24.10.8 x86_64 | `tailscale_*_x86_64.ipk` | `luci-*.ipk` |
-| OpenWrt 25.12.6 x86_64 | `tailscale-*_openwrt-25.12.6-x86-64.apk` | `luci-*.apk` |
+| OpenWrt 25.12.6 x86_64 | `tailscale-*.apk` | `luci-*.apk` |
 
 Upload the matching Tailscale package, LuCI application and optional translation
 packages to `/tmp`. Keep only packages for your router in that directory.

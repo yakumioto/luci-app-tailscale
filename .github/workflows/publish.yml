@@ -22,6 +22,9 @@ concurrency:
 
 jobs:
   publish:
+    concurrency:
+      group: release-${{ github.repository }}-${{ inputs.tag }}
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -51,6 +54,9 @@ jobs:
           assert run['head_sha'] == expected, 'Build does not match release tag'
           PY
 
+      - name: Validate release policy
+        run: python3 -m unittest discover -s .github/tests -v
+
       - name: Download verified build artifacts
         run: gh run download "$RUN_ID" --pattern 'openwrt-*' --dir release-assets
 
@@ -58,16 +64,4 @@ jobs:
         run: python3 .github/scripts/prepare-release.py release-assets dist
 
       - name: Publish packages and installation instructions
-        run: |
-          if ! gh release view "$TAG" >/dev/null 2>&1; then
-            gh release create "$TAG" --verify-tag --title "$TAG" --notes-file .github/RELEASE_NOTES.md
-          fi
-          gh release upload "$TAG" dist/* --clobber
-          gh release edit "$TAG" --notes-file .github/RELEASE_NOTES.md
-          # Keep only the approved six packages after all uploads succeed.
-          gh release view "$TAG" --json assets --jq '.assets[].name' > asset-names.txt
-          while IFS= read -r asset; do
-            if [[ ! -f "dist/$asset" ]]; then
-              gh release delete-asset "$TAG" "$asset" --yes
-            fi
-          done < asset-names.txt
+        run: python3 .github/scripts/publish-release.py

@@ -29,14 +29,22 @@ and Simplified/Traditional Chinese translations. The default matrix is:
   builds succeed. Releases provide directly installable `.ipk` and `.apk`
   attachments: exactly three IPKs and three APKs for x86_64 (Tailscale, LuCI and
   Simplified Chinese). Build manifests, checksums, verification reports and the
-  Traditional Chinese translation remain in Actions artifacts. APK filenames include
-  the release and target because their default names omit the architecture.
+  Traditional Chinese translation remain in Actions artifacts. APKs keep their
+  original SDK filenames, such as `tailscale-1.104.2-r2.apk`; release notes identify
+  the OpenWrt version and x86_64 target.
   Re-running a tag build replaces its assets. Tailscale, LuCI and translation
   package versions follow Tailscale's version. A tag suffix such as `-r2`
   identifies an OpenWrt packaging revision of the same Tailscale version.
 - To publish an existing successful build without recompiling, manually run
   **Publish existing build** with the release tag and source Actions run ID.
   The workflow checks that the build commit matches the tag before publishing.
+
+Both publishing paths use the same package selection and upload scripts. CI
+checks the six-file policy before building or publishing. Mixed versions,
+unexpected files, wrong tag versions and missing packages fail the release.
+Uploads are checked against remote sizes and available SHA-256 digests before
+stale attachments are removed; the final remote attachment list must match the
+six expected filenames exactly.
 
 The workflow uses the repository's `GITHUB_TOKEN`; no extra secret is needed.
 GitHub Actions must be enabled in your fork. Only the release job has
