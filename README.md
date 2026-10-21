@@ -26,9 +26,13 @@ and Simplified/Traditional Chinese translations. The default matrix is:
   Artifacts contain four packages, `SHA256SUMS` and `build-info.txt` and are
   retained for 14 days. Failed builds retain SDK logs for 7 days.
 - Pushing a `v*` tag builds all targets and creates a GitHub Release after all
-  builds succeed. Each release/target gets a separate `.tar.gz` bundle to keep
-  identically named LuCI packages from different SDKs separate. Release assets
-  also include bundle checksums. Re-running a tag build replaces its assets.
+  builds succeed. Releases provide directly installable `.ipk` and `.apk`
+  attachments, checksums and per-target build manifests. LuCI and translations
+  use one architecture-independent copy per format from the x86 SDK; Tailscale
+  binaries are published separately for each architecture. APK filenames include
+  the release and target because their default names omit the architecture.
+  Re-running a tag build replaces its assets. Release tags follow Tailscale's
+  version; the LuCI plugin retains its own version.
 
 The workflow uses the repository's `GITHUB_TOKEN`; no extra secret is needed.
 GitHub Actions must be enabled in your fork. Only the release job has
