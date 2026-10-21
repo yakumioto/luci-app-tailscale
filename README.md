@@ -33,6 +33,9 @@ and Simplified/Traditional Chinese translations. The default matrix is:
   the release and target because their default names omit the architecture.
   Re-running a tag build replaces its assets. Release tags follow Tailscale's
   version; the LuCI plugin retains its own version.
+- To publish an existing successful build without recompiling, manually run
+  **Publish existing build** with the release tag and source Actions run ID.
+  The workflow checks that the build commit matches the tag before publishing.
 
 The workflow uses the repository's `GITHUB_TOKEN`; no extra secret is needed.
 GitHub Actions must be enabled in your fork. Only the release job has

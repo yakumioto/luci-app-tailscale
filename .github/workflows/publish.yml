@@ -1,0 +1,73 @@
+name: Publish existing build
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag
+        required: true
+        type: string
+      run_id:
+        description: Successful Build OpenWrt packages run for that tag's commit
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: publish-existing-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ inputs.tag }}
+      RUN_ID: ${{ inputs.run_id }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate source build and tag
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$RUN_ID" =~ ^[0-9]+$ ]]
+          gh api "repos/$GH_REPO/actions/runs/$RUN_ID" > source-run.json
+          python3 - <<'PY'
+          import json, os, subprocess
+          run = json.load(open('source-run.json'))
+          expected = subprocess.check_output(
+              ['git', 'rev-parse', os.environ['TAG'] + '^{commit}'], text=True
+          ).strip()
+          assert run['status'] == 'completed' and run['conclusion'] == 'success'
+          assert run['event'] == 'push'
+          assert run['path'] == '.github/workflows/build.yml'
+          assert run['head_sha'] == expected, 'Build does not match release tag'
+          PY
+
+      - name: Download verified build artifacts
+        run: gh run download "$RUN_ID" --pattern 'openwrt-*' --dir release-assets
+
+      - name: Prepare installable packages
+        run: python3 .github/scripts/prepare-release.py release-assets dist
+
+      - name: Publish packages and installation instructions
+        run: |
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --verify-tag --title "$TAG" --notes-file .github/RELEASE_NOTES.md
+          fi
+          gh release upload "$TAG" dist/* --clobber
+          gh release edit "$TAG" --notes-file .github/RELEASE_NOTES.md
+          # Remove the superseded wrappers only after all direct uploads succeed.
+          gh release view "$TAG" --json assets --jq '.assets[].name' > asset-names.txt
+          while IFS= read -r asset; do
+            if [[ "$asset" == openwrt-*.tar.gz ]]; then
+              gh release delete-asset "$TAG" "$asset" --yes
+            fi
+          done < asset-names.txt
