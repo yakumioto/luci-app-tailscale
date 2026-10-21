@@ -1,6 +1,7 @@
 Prebuilt Tailscale daemon/CLI, LuCI application and Chinese translations.
-The release tag follows the **Tailscale** version; the LuCI application keeps
-its own **1.2.6** version. LuCI and translation packages use architecture `all`.
+Tailscale, the LuCI application and translations are versioned **1.104.2**.
+The `-r2` tag suffix identifies the corrected OpenWrt packaging revision.
+LuCI and translation packages use architecture `all`.
 
 Download the `.ipk` or `.apk` files directly; no tarball extraction is needed.
 

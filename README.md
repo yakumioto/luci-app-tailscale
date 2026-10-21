@@ -31,8 +31,9 @@ and Simplified/Traditional Chinese translations. The default matrix is:
   use one architecture-independent copy per format from the x86 SDK; Tailscale
   binaries are published separately for each architecture. APK filenames include
   the release and target because their default names omit the architecture.
-  Re-running a tag build replaces its assets. Release tags follow Tailscale's
-  version; the LuCI plugin retains its own version.
+  Re-running a tag build replaces its assets. Tailscale, LuCI and translation
+  package versions follow Tailscale's version. A tag suffix such as `-r2`
+  identifies an OpenWrt packaging revision of the same Tailscale version.
 - To publish an existing successful build without recompiling, manually run
   **Publish existing build** with the release tag and source Actions run ID.
   The workflow checks that the build commit matches the tag before publishing.

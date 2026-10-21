@@ -90,6 +90,9 @@ for package in tailscale luci-app-tailscale luci-i18n-tailscale-zh-cn luci-i18n-
   fi
   cp "${files[0]}" "$OUTPUT_DIR/"
 done
+if compgen -G "$OUTPUT_DIR/*.ipk" > /dev/null; then
+  python3 "$repo_dir/.github/scripts/verify-ipk.py" "$OUTPUT_DIR" "$repo_dir"
+fi
 {
   echo "source_commit=$(git -C "$repo_dir" rev-parse HEAD)"
   echo "openwrt_release=$OPENWRT_RELEASE"
@@ -101,5 +104,6 @@ done
     echo "${feed}_feed_commit=$(git -C "feeds/$feed" rev-parse HEAD)"
   done
   grep '^PKG_VERSION:=' "$repo_dir/tailscale/Makefile"
+  grep '^PKG_VERSION:=' "$repo_dir/Makefile" | sed 's/^PKG_VERSION/LUCI_VERSION/'
 } > "$OUTPUT_DIR/build-info.txt"
 (cd "$OUTPUT_DIR" && find . -maxdepth 1 -type f \( -name '*.ipk' -o -name '*.apk' \) -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)

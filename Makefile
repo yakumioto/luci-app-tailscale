@@ -8,7 +8,9 @@ LUCI_TITLE:=LuCI for Tailscale
 LUCI_DEPENDS:=+tailscale
 LUCI_PKGARCH:=all
 
-PKG_VERSION:=1.2.6
+PKG_VERSION:=1.104.2
+PKG_RELEASE:=2
+PKG_PO_VERSION:=$(PKG_VERSION)
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

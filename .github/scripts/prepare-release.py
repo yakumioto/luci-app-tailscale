@@ -45,6 +45,9 @@ def prepare(source: Path, destination: Path) -> None:
                 raise ValueError(f"Duplicate release asset: {name}")
             shutil.copyfile(package, output)
         shutil.copyfile(bundle / "build-info.txt", destination / f"{bundle.name}-build-info.txt")
+        verification = bundle / "ipk-verification.txt"
+        if verification.exists():
+            shutil.copyfile(verification, destination / f"{bundle.name}-ipk-verification.txt")
     if formats != {".ipk", ".apk"}:
         raise ValueError("Missing canonical LuCI packages for IPK or APK")
     checksums = [
